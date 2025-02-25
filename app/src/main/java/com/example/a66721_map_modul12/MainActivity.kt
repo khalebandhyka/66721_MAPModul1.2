@@ -52,11 +52,20 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MySootheApp() }
+        setContent {
+            val windowSizeClass = calculateWindowSizeClass(this)
+            MySootheApp(windowSizeClass)
+        }
     }
 }
 
@@ -252,6 +261,18 @@ private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun MySootheApp(windowSize: WindowSizeClass) {
+    when (windowSize.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> {
+            MySootheAppPortrait()
+        }
+        WindowWidthSizeClass.Expanded -> {
+            MySootheAppLandscape()
+        }
+    }
+}
+
 // Step: MySoothe App - Scaffold
 @Composable
 fun MySootheAppPortrait() {
@@ -272,8 +293,13 @@ private fun SootheNavigationRail(modifier: Modifier = Modifier) {
 // Step: Landscape Mode
 @Composable
 fun MySootheAppLandscape(){
-    // Implement composable here
-}
+    MySootheApp {
+        Scaffold(
+            bottomBar = { SootheBottomNavigation() }
+        ) { padding ->
+            HomeScreen(Modifier.padding(padding))
+        }
+    }}
 
 // Step: MySoothe App
 @Composable
